@@ -28,7 +28,7 @@ namespace API.Services
         }
 
         public void RegisterUser(RegisterUserDto dto)
-        { 
+        {
             var newUser = new User() { Email = dto.Email };
             var passwordHash =
                 _passwordHasher.HashPassword(newUser, dto.Password);
@@ -48,10 +48,29 @@ namespace API.Services
                 throw new Exception("Invalid username or password");
             }
 
+            if (DateTimeOffset.Now.ToUnixTimeSeconds() < user.TimeToLoginAgain)
+            {
+                throw new TimeoutException("You have to wait to login again");
+            }
+
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
             if (result == PasswordVerificationResult.Failed)
             {
-                throw new Exception("Invalid username or password");
+                if (user.NumberOfFailedLoginAttempts >= 2)
+                {
+                    user.TimeToLoginAgain = DateTimeOffset.Now.ToUnixTimeSeconds() + 30;
+                    user.NumberOfFailedLoginAttempts = 0;
+                    _dbContext.SaveChanges();
+                    throw new TimeoutException("You have to wait to login again");
+                }
+                else
+                {
+                    user.NumberOfFailedLoginAttempts = user.NumberOfFailedLoginAttempts + 1;
+                    _dbContext.SaveChanges();
+                    throw new Exception("Invalid username or password");
+                }
+
+
             }
 
             var claims = new List<Claim>()
@@ -88,7 +107,7 @@ namespace API.Services
         {
             var user = _dbContext.Users.FirstOrDefault(p => p.Id == id);
             if (user is null)
-               throw new NullReferenceException("User to delete found");
+                throw new NullReferenceException("User to delete found");
 
             _dbContext.Users.Remove(user);
             _dbContext.SaveChanges();

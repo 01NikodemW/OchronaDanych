@@ -38,7 +38,7 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            _accountService.RegisterUser (dto);
+            _accountService.RegisterUser(dto);
             return Ok();
         }
 
@@ -52,15 +52,27 @@ namespace API.Controllers
                 return BadRequest();
             }
             int milliseconds = 1000;
-            Thread.Sleep (milliseconds);
-            string token = _accountService.GenerateJwt(dto);
-            return Ok(token);
+            Thread.Sleep(milliseconds);
+
+
+            // string token = _accountService.GenerateJwt(dto);
+
+            try
+            {
+                string token = _accountService.GenerateJwt(dto);
+                return Ok(token);
+            }
+            catch (TimeoutException e)
+            {
+                return StatusCode(408,"Limit o login attempt, please wait");
+            }
+
         }
 
         [HttpDelete]
         public ActionResult DeleteParcel([FromBody] Guid id)
         {
-            _accountService.DeleteUser (id);
+            _accountService.DeleteUser(id);
             return Ok();
         }
     }
