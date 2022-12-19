@@ -11,5 +11,8 @@ namespace API.Entities
         public string? PasswordHash { get; set; } = default!;
         public Guid UserId { get; set; }
         public virtual User User { get; set; }
+
+        public int NumberOfFailedNoteDecryptAttempts { get; set; } = 0;
+        public long TimeToDecryptAgain { get; set; }
     }
 }

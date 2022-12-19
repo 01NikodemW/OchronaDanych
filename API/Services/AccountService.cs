@@ -69,8 +69,6 @@ namespace API.Services
                     _dbContext.SaveChanges();
                     throw new Exception("Invalid username or password");
                 }
-
-
             }
 
             var claims = new List<Claim>()

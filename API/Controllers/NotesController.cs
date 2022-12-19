@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/notes")]
-    
+
     public class NotesController : ControllerBase
     {
         private readonly INotesService _notesService;
@@ -33,18 +33,19 @@ namespace API.Controllers
             return Ok(notes);
         }
 
-        [Authorize]     
+        [Authorize]
         [HttpGet("mynotes")]
         public ActionResult<IEnumerable<Note>> GetNotesForMe()
         {
             var id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            if(id is null){
+            if (id is null)
+            {
                 return BadRequest();
             }
             var notes = _notesService.GetMyNotes(Guid.Parse(id));
             return Ok(notes);
         }
-        
+
         [Authorize]
         [HttpPost]
         public ActionResult<Guid> CreateNote([FromBody] CreateNoteDto dto)
@@ -56,10 +57,11 @@ namespace API.Controllers
                 return BadRequest();
             }
             var id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            if(id is null){
+            if (id is null)
+            {
                 return BadRequest();
             }
-            var noteId = _notesService.CreateNote(dto,Guid.Parse(id));
+            var noteId = _notesService.CreateNote(dto, Guid.Parse(id));
             return Ok(noteId);
         }
 
@@ -68,11 +70,22 @@ namespace API.Controllers
         public ActionResult<string> DecryptNote([FromBody] DecryptNoteDto dto)
         {
             var userId = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            if(userId is null){
+            if (userId is null)
+            {
                 return BadRequest();
             }
-            var noteContent = _notesService.DecryptNote(dto.NoteId,Guid.Parse(userId),dto.Password);
-            return Ok(noteContent);
+            // var noteContent = _notesService.DecryptNote(dto.NoteId, Guid.Parse(userId), dto.Password);
+            // return Ok(noteContent);
+
+            try
+            {
+                var noteContent = _notesService.DecryptNote(dto.NoteId, Guid.Parse(userId), dto.Password);
+                return Ok(noteContent);
+            }
+            catch (TimeoutException e)
+            {
+                return StatusCode(408, "Limit o decrypt attempt, please wait");
+            }
         }
 
         [Authorize]
@@ -80,10 +93,11 @@ namespace API.Controllers
         public ActionResult ChangeAccessibility([FromBody] ChangeAccessibilityDto dto)
         {
             var userId = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            if(userId is null){
+            if (userId is null)
+            {
                 return BadRequest();
             }
-            _notesService.ChangeAccessibility(dto.NoteId,Guid.Parse(userId));
+            _notesService.ChangeAccessibility(dto.NoteId, Guid.Parse(userId));
             return Ok();
         }
 
