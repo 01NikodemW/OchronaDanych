@@ -32,6 +32,7 @@ type NoteToSend = {
   passwordHash: string;
 };
 
+
 export default function MainPage() {
   const [showCreateNote, setShowCreateNote] = useState<boolean>(false);
   const [noteValue, setNoteValue] = useState<string>(``);
