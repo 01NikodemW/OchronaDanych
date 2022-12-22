@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import mostCommonPasswords from "../../utils/mostCommonPasswords";
 
 enum PasswordStrength {
+  None,
   Weak,
   Medium,
   Strong,
@@ -37,17 +38,20 @@ export default function MainPage() {
   const [registerRepeatPasswordValue, setRegisterRepeatPasswordValue] =
     useState<string>("");
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>(
-    PasswordStrength.Strong
+    PasswordStrength.None
   );
   const [showLoginPage, setShowLoginPage] = useState<boolean>(true);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState<boolean>(false);
   const [modalErrorMessage, setModalErrorMessage] = useState<string>("");
 
-  const changePasswordStrength = () => {
+  const changePasswordStrength = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const array = new Array(256).fill(0);
-    const passwordLength = registerPasswordValue.length;
+    const newPassword = event.target.value;
+    const passwordLength = newPassword.length;
     for (let i = 0; i < passwordLength; i++) {
-      array[registerPasswordValue.charAt(i).charCodeAt(0)] += 1;
+      array[newPassword.charAt(i).charCodeAt(0)] += 1;
     }
     let passwordEntropy = 0;
     for (let i = 0; i < 256; i++) {
@@ -65,13 +69,14 @@ export default function MainPage() {
         : PasswordStrength.Strong
     );
 
-    if (
-      mostCommonPasswords.includes(registerPasswordValue) ||
-      passwordLength < 7
-    ) {
-      console.log("lipa");
+    if (mostCommonPasswords.includes(newPassword) || passwordLength < 7) {
       setPasswordStrength(PasswordStrength.Weak);
     }
+    if (passwordLength === 0) {
+      setPasswordStrength(PasswordStrength.None);
+    }
+
+    setRegisterPasswordValue(newPassword);
   };
 
   const setAllToEmpty = () => {
@@ -120,18 +125,17 @@ export default function MainPage() {
       body: JSON.stringify(loginData),
     });
     if (!response.ok) {
-      if(response.status == 408){
+      if (response.status == 408) {
         setIsErrorModalOpen(true);
         setModalErrorMessage("Przekroczono ilość prób, proszę czekać");
         return;
-      }  
+      }
       setIsErrorModalOpen(true);
       setModalErrorMessage("Błąd w trakcie logowania");
       return;
     }
     const data = await response.text();
     localStorage.setItem("token", data);
-    console.log(data);
 
     router.push("/MainPage");
   }
@@ -299,10 +303,7 @@ export default function MainPage() {
               <TextField
                 label="Hasło"
                 value={registerPasswordValue}
-                onChange={(e) => {
-                  setRegisterPasswordValue(e.target.value);
-                  changePasswordStrength();
-                }}
+                onChange={changePasswordStrength}
                 sx={{
                   marginTop: "20px",
                   input: {
@@ -324,6 +325,40 @@ export default function MainPage() {
                   },
                 }}
               />
+              {passwordStrength === PasswordStrength.None && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "100%",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: "50px",
+                      height: "5px",
+                      bgcolor: "#43506C",
+                      border: "1px solid black",
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      width: "50px",
+                      height: "5px",
+                      bgcolor: "#43506C",
+                      border: "1px solid black",
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      width: "50px",
+                      height: "5px",
+                      bgcolor: "#43506C",
+                      border: "1px solid black",
+                    }}
+                  />
+                </Box>
+              )}
               {passwordStrength === PasswordStrength.Weak && (
                 <Box
                   sx={{

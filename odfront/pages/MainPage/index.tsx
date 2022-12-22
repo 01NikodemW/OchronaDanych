@@ -79,21 +79,6 @@ export default function MainPage() {
     console.log(data);
   }
 
-  const onSendNoteHandler = () => {
-    setShowCreateNote(false);
-    if (publicNoteChecked && notePassword.length > 0) {
-      setModalErrorMessage("Szyfrowana notatka nie może być publiczna");
-      setIsErrorModalOpen(true);
-    } else {
-      const note: NoteToSend = {
-        content: noteValue,
-        isNotePublic: publicNoteChecked,
-        passwordHash: notePassword,
-      };
-      sendNote(note);
-    }
-  };
-
   async function changeAccessibility(noteId: string) {
     const response = await fetch("https://localhost:7154/api/notes", {
       method: "PUT",
@@ -158,6 +143,21 @@ export default function MainPage() {
     });
   }
 
+  const onSendNoteHandler = () => {
+    setShowCreateNote(false);
+    if (publicNoteChecked && notePassword.length > 0) {
+      setModalErrorMessage("Szyfrowana notatka nie może być publiczna");
+      setIsErrorModalOpen(true);
+    } else {
+      const note: NoteToSend = {
+        content: noteValue,
+        isNotePublic: publicNoteChecked,
+        passwordHash: notePassword,
+      };
+      sendNote(note);
+    }
+  };
+
   const onPublicNoteClickHandler = () => {
     setPublicNoteChecked(true);
     setPrivateNoteChecked(false);
@@ -172,6 +172,12 @@ export default function MainPage() {
     router.push("/Logout");
   };
 
+  const onCloseDecryptModalHandler = () => {
+    setIsInsertPasswordModalOpen(false);
+    setDecryptedNote("");
+    setNotePasswordToDecrypt("");
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -183,8 +189,6 @@ export default function MainPage() {
     setMyNotes([]);
     getMyNotes();
   }, []);
-
-  const notes = ["# Saab", "Volvo", "BMW"];
 
   return (
     <>
@@ -335,6 +339,7 @@ export default function MainPage() {
                   paddingX: "10px",
                   paddingY: "1px",
                   bgcolor: "#E9E9EB",
+                  color: "black",
                 }}
               >
                 <ReactMarkdown children={noteValue} />
@@ -477,7 +482,7 @@ export default function MainPage() {
       </Box>
       <Modal
         open={isInsertPasswordModalOpen}
-        onClose={() => setIsInsertPasswordModalOpen(false)}
+        onClose={onCloseDecryptModalHandler}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
