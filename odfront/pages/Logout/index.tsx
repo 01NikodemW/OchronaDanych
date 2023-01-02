@@ -65,7 +65,7 @@ export default function MainPage() {
     setPasswordStrength(
       passwordEntropy < 2
         ? PasswordStrength.Weak
-        : passwordEntropy < 3
+        : passwordEntropy < 4
         ? PasswordStrength.Medium
         : PasswordStrength.Strong
     );

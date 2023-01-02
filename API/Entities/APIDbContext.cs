@@ -13,8 +13,12 @@ namespace API.Entities
 
         public DbSet<Note> Notes { get; set; }
 
+        public DbSet<LoginAttempts> LoginAttempts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            Seeder.SeedData(modelBuilder);
         }
+
     }
 }

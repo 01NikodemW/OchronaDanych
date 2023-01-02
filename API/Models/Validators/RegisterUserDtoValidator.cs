@@ -25,7 +25,7 @@ namespace API.Models.Validators
                     var emailInUse = dbContext.Users.Any(u => u.Email == value);
                     if (emailInUse)
                     {
-                        context.AddFailure("Email", "Something went wrong");
+                        context.AddFailure("Email", "Email is taken");
                     }
                 });
         }

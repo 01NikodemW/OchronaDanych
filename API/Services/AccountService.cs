@@ -42,34 +42,57 @@ namespace API.Services
         {
             var user = _dbContext.Users
                 .FirstOrDefault(u => u.Email == dto.Email);
+            var loginAttempts = _dbContext.LoginAttempts.FirstOrDefault(x => x.TimeToLoginAgain != -10);
 
-            if (user is null)
+            if (loginAttempts is null)
             {
-                throw new Exception("Invalid username or password");
+                throw new Exception("Sth went wrong");
             }
 
-            if (DateTimeOffset.Now.ToUnixTimeSeconds() < user.TimeToLoginAgain)
+            if (DateTimeOffset.Now.ToUnixTimeSeconds() < loginAttempts.TimeToLoginAgain)
             {
                 throw new TimeoutException("You have to wait to login again");
             }
 
-            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-            if (result == PasswordVerificationResult.Failed)
+            if (user is null)
             {
-                if (user.NumberOfFailedLoginAttempts >= 2)
+                if (loginAttempts.NumberOfFailedLoginAttempts >= 2)
                 {
-                    user.TimeToLoginAgain = DateTimeOffset.Now.ToUnixTimeSeconds() + 30;
-                    user.NumberOfFailedLoginAttempts = 0;
+                    loginAttempts.TimeToLoginAgain = DateTimeOffset.Now.ToUnixTimeSeconds() + 30;
+                    loginAttempts.NumberOfFailedLoginAttempts = 0;
                     _dbContext.SaveChanges();
                     throw new TimeoutException("You have to wait to login again");
                 }
                 else
                 {
-                    user.NumberOfFailedLoginAttempts = user.NumberOfFailedLoginAttempts + 1;
+                    loginAttempts.NumberOfFailedLoginAttempts = loginAttempts.NumberOfFailedLoginAttempts + 1;
                     _dbContext.SaveChanges();
                     throw new Exception("Invalid username or password");
                 }
             }
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                if (loginAttempts.NumberOfFailedLoginAttempts >= 2)
+                {
+                    loginAttempts.TimeToLoginAgain = DateTimeOffset.Now.ToUnixTimeSeconds() + 30;
+                    loginAttempts.NumberOfFailedLoginAttempts = 0;
+                    _dbContext.SaveChanges();
+                    throw new TimeoutException("You have to wait to login again");
+                }
+                else
+                {
+                    loginAttempts.NumberOfFailedLoginAttempts = loginAttempts.NumberOfFailedLoginAttempts + 1;
+                    _dbContext.SaveChanges();
+                    throw new Exception("Invalid username or password");
+                }
+            }
+
+
+            loginAttempts.NumberOfFailedLoginAttempts = 0;
+            loginAttempts.TimeToLoginAgain = 0;
+            _dbContext.SaveChanges();
 
             var claims = new List<Claim>()
             {
