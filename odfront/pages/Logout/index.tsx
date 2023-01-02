@@ -43,6 +43,7 @@ export default function MainPage() {
   const [showLoginPage, setShowLoginPage] = useState<boolean>(true);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState<boolean>(false);
   const [modalErrorMessage, setModalErrorMessage] = useState<string>("");
+  const [blockLogin, setBlockLogin] = useState<boolean>(false);
 
   const changePasswordStrength = (
     event: React.ChangeEvent<HTMLTextAreaElement>
@@ -115,6 +116,7 @@ export default function MainPage() {
   }, []);
 
   async function Login(loginData: LoginType) {
+    setBlockLogin(true);
     const response = await fetch("https://localhost:7154/api/account/login/", {
       method: "POST",
       mode: "cors",
@@ -125,6 +127,7 @@ export default function MainPage() {
       body: JSON.stringify(loginData),
     });
     if (!response.ok) {
+      setBlockLogin(false);
       if (response.status == 408) {
         setIsErrorModalOpen(true);
         setModalErrorMessage("Przekroczono ilość prób, proszę czekać");
@@ -134,6 +137,7 @@ export default function MainPage() {
       setModalErrorMessage("Błąd w trakcie logowania");
       return;
     }
+    // setBlockLogin(false);
     const data = await response.text();
     localStorage.setItem("token", data);
 
@@ -155,7 +159,7 @@ export default function MainPage() {
     );
     if (!response.ok) {
       setIsErrorModalOpen(true);
-      setModalErrorMessage("Błąd w trakcie rejestracji");
+      setModalErrorMessage(await response.text());
       return;
     }
     Login({
@@ -251,6 +255,7 @@ export default function MainPage() {
                     border: "3px solid #EF4B4C",
                   },
                 }}
+                disabled={blockLogin}
                 onClick={onLoginClickHandler}
               >
                 Zaloguj się

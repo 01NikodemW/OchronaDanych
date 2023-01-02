@@ -182,7 +182,7 @@ namespace API.Services
 
             if (DateTimeOffset.Now.ToUnixTimeSeconds() < note.TimeToDecryptAgain)
             {
-                throw new TimeoutException("You have to wait to login again");
+                throw new TimeoutException("You have to wait to decrypt again");
             }
 
             var result =  _passwordHasher.VerifyHashedPassword(note, note.PasswordHash, password);

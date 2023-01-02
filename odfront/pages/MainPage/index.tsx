@@ -17,6 +17,7 @@ import { TextareaAutosize } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import jwt_decode from "jwt-decode";
 import router from "next/router";
+import mostCommonPasswords from "../../utils/mostCommonPasswords";
 
 type NoteType = {
   id: string;
@@ -32,6 +33,12 @@ type NoteToSend = {
   passwordHash: string;
 };
 
+enum PasswordStrength {
+  None,
+  Weak,
+  Medium,
+  Strong,
+}
 
 export default function MainPage() {
   const [showCreateNote, setShowCreateNote] = useState<boolean>(false);
@@ -50,8 +57,15 @@ export default function MainPage() {
     useState<string>("");
   const [noteIdToDecrypt, setNoteIdToDecrypt] = useState<string>("");
   const [decryptedNote, setDecryptedNote] = useState<string>("");
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>(
+    PasswordStrength.None
+  );
+  const [blockDecryption, setBlockDecryption] = useState<boolean>(false);
+
+  console.log("passwordStrength ", passwordStrength);
 
   async function decryptData() {
+    setBlockDecryption(true)
     const response = await fetch("https://localhost:7154/api/notes/decrypt", {
       method: "POST",
       mode: "cors",
@@ -66,6 +80,7 @@ export default function MainPage() {
       }),
     });
     if (!response.ok) {
+      setBlockDecryption(false)
       if (response.status == 408) {
         setIsErrorModalOpen(true);
         setModalErrorMessage("Przekroczono ilość prób, proszę czekać");
@@ -100,6 +115,7 @@ export default function MainPage() {
   }
 
   async function sendNote(note: NoteToSend) {
+    console.log(note);
     const response = await fetch("https://localhost:7154/api/notes", {
       method: "POST",
       mode: "cors",
@@ -111,8 +127,11 @@ export default function MainPage() {
       body: JSON.stringify(note),
     });
     if (!response.ok) {
-      console.log("not ok");
-      throw new Error(`HTTP error! status: ${response.status}`);
+      setIsErrorModalOpen(true);
+      setModalErrorMessage(await response.text());
+      return;
+      // console.log("not ok");
+      // throw new Error(`HTTP error! status: ${response.status}`);
     }
   }
 
@@ -146,6 +165,7 @@ export default function MainPage() {
 
   const onSendNoteHandler = () => {
     setShowCreateNote(false);
+    setPasswordStrength(PasswordStrength.None);
     if (publicNoteChecked && notePassword.length > 0) {
       setModalErrorMessage("Szyfrowana notatka nie może być publiczna");
       setIsErrorModalOpen(true);
@@ -163,6 +183,7 @@ export default function MainPage() {
     setPublicNoteChecked(true);
     setPrivateNoteChecked(false);
   };
+
   const onPrivateNoteClickHandler = () => {
     setPublicNoteChecked(false);
     setPrivateNoteChecked(true);
@@ -177,6 +198,42 @@ export default function MainPage() {
     setIsInsertPasswordModalOpen(false);
     setDecryptedNote("");
     setNotePasswordToDecrypt("");
+    setBlockDecryption(false)
+  };
+
+  const changePasswordStrength = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const array = new Array(256).fill(0);
+    const newPassword = event.target.value;
+    const passwordLength = newPassword.length;
+    for (let i = 0; i < passwordLength; i++) {
+      array[newPassword.charAt(i).charCodeAt(0)] += 1;
+    }
+    let passwordEntropy = 0;
+    for (let i = 0; i < 256; i++) {
+      if (array[i] > 0) {
+        passwordEntropy =
+          passwordEntropy -
+          (array[i] / passwordLength) * Math.log2(array[i] / passwordLength);
+      }
+    }
+    setPasswordStrength(
+      passwordEntropy < 2
+        ? PasswordStrength.Weak
+        : passwordEntropy < 3
+        ? PasswordStrength.Medium
+        : PasswordStrength.Strong
+    );
+
+    if (mostCommonPasswords.includes(newPassword) || passwordLength < 7) {
+      setPasswordStrength(PasswordStrength.Weak);
+    }
+    if (passwordLength === 0) {
+      setPasswordStrength(PasswordStrength.None);
+    }
+
+    setNotePassword(newPassword);
   };
 
   useEffect(() => {
@@ -294,6 +351,7 @@ export default function MainPage() {
                   }}
                   onClick={() => {
                     setShowCreateNote(false);
+                    setPasswordStrength(PasswordStrength.None);
                     setNoteValue("");
                   }}
                 >
@@ -379,19 +437,164 @@ export default function MainPage() {
                   label="prywatna"
                 />
               </FormGroup>
-              <TextField
-                label="hasło"
-                sx={{
-                  input: {
-                    color: "black",
-                    bgcolor: "white",
-                    bordeColor: "white",
-                  },
-                }}
-                onChange={(e) => {
-                  setNotePassword(e.target.value);
-                }}
-              />
+              <Box sx={{}}>
+                <TextField
+                  label="hasło"
+                  sx={{
+                    input: {
+                      color: "black",
+                      bgcolor: "white",
+                      bordeColor: "white",
+                    },
+                  }}
+                  onChange={changePasswordStrength}
+                />
+
+                {passwordStrength === PasswordStrength.None && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "left",
+                      width: "100%",
+                      ml: "15px",
+                      mt: "15px",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "#43506C",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "#43506C",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "#43506C",
+                        border: "1px solid black",
+                      }}
+                    />
+                  </Box>
+                )}
+                {passwordStrength === PasswordStrength.Weak && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "left",
+                      width: "100%",
+                      ml: "15px",
+                      mt: "15px",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "red",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "#43506C",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "#43506C",
+                        border: "1px solid black",
+                      }}
+                    />
+                  </Box>
+                )}
+                {passwordStrength === PasswordStrength.Medium && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "left",
+                      width: "100%",
+                      ml: "15px",
+                      mt: "15px",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "yellow",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "yellow",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "#43506C",
+                        border: "1px solid black",
+                      }}
+                    />
+                  </Box>
+                )}
+                {passwordStrength === PasswordStrength.Strong && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "left",
+                      width: "100%",
+                      ml: "15px",
+                      mt: "15px",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "green",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "green",
+                        border: "1px solid black",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: "50px",
+                        height: "5px",
+                        bgcolor: "green",
+                        border: "1px solid black",
+                      }}
+                    />
+                  </Box>
+                )}
+              </Box>
             </Box>
           )}
           <Box
@@ -525,6 +728,7 @@ export default function MainPage() {
               onClick={() => {
                 decryptData();
               }}
+              disabled={blockDecryption}
             >
               Zatwierdź
             </Button>
@@ -544,7 +748,12 @@ export default function MainPage() {
       </Modal>
       <Modal
         open={isErrorModalOpen}
-        onClose={() => setIsErrorModalOpen(false)}
+        onClose={() => {
+          setIsErrorModalOpen(false);
+          setNoteValue("");
+          setPasswordStrength(PasswordStrength.None);
+          setNotePassword("");
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >

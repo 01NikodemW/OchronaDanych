@@ -36,7 +36,7 @@ namespace API.Controllers
             var validationResult = validator.Validate(dto);
             if (!validationResult.IsValid)
             {
-                return BadRequest();
+                return BadRequest(validationResult.ToString());
             }
             _accountService.RegisterUser(dto);
             return Ok();
@@ -45,18 +45,14 @@ namespace API.Controllers
         [HttpPost("login")]
         public ActionResult Login([FromBody] LoginDto dto)
         {
-            var validator = new LoginDtoValidator(_dbContext);
-            var validationResult = validator.Validate(dto);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest();
-            }
+            // var validator = new LoginDtoValidator(_dbContext);
+            // var validationResult = validator.Validate(dto);
+            // if (!validationResult.IsValid)
+            // {
+            //     return BadRequest();
+            // }
             int milliseconds = 1000;
             Thread.Sleep(milliseconds);
-
-
-            // string token = _accountService.GenerateJwt(dto);
-
             try
             {
                 string token = _accountService.GenerateJwt(dto);

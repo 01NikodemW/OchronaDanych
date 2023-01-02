@@ -54,7 +54,7 @@ namespace API.Controllers
             var validationResult = validator.Validate(dto);
             if (!validationResult.IsValid)
             {
-                return BadRequest();
+                return BadRequest(validationResult.ToString());
             }
             var id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
             if (id is null)
@@ -77,6 +77,8 @@ namespace API.Controllers
             // var noteContent = _notesService.DecryptNote(dto.NoteId, Guid.Parse(userId), dto.Password);
             // return Ok(noteContent);
 
+            int milliseconds = 1000;
+            Thread.Sleep(milliseconds);
             try
             {
                 var noteContent = _notesService.DecryptNote(dto.NoteId, Guid.Parse(userId), dto.Password);
