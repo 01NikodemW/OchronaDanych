@@ -66,7 +66,7 @@ export default function MainPage() {
 
   async function decryptData() {
     setBlockDecryption(true)
-    const response = await fetch("https://localhost:7154/api/notes/decrypt", {
+    const response = await fetch("https://localhost:8001/api/notes/decrypt", {
       method: "POST",
       mode: "cors",
       headers: {
@@ -96,7 +96,7 @@ export default function MainPage() {
   }
 
   async function changeAccessibility(noteId: string) {
-    const response = await fetch("https://localhost:7154/api/notes", {
+    const response = await fetch("https://localhost:8001/api/notes", {
       method: "PUT",
       mode: "cors",
       headers: {
@@ -116,7 +116,7 @@ export default function MainPage() {
 
   async function sendNote(note: NoteToSend) {
     console.log(note);
-    const response = await fetch("https://localhost:7154/api/notes", {
+    const response = await fetch("https://localhost:8001/api/notes", {
       method: "POST",
       mode: "cors",
       headers: {
@@ -136,7 +136,7 @@ export default function MainPage() {
   }
 
   async function getMyNotes() {
-    const response = await fetch("https://localhost:7154/api/notes/mynotes", {
+    const response = await fetch("https://localhost:8001/api/notes/mynotes", {
       method: "GET",
       mode: "cors",
       headers: {

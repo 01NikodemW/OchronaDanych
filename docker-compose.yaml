@@ -1,0 +1,32 @@
+version: "3.2"
+services:
+  frontend:
+    image: inpost-frontend
+    ports:
+      - "4430:4430"
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    stdin_open: true
+    tty: true
+
+
+  backend:
+    image: inpost-backend
+    ports:
+      - "8001:443"
+      - "8000:80"
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    links:
+      - "database:database"
+
+  database:
+    container_name: sql-server-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "very_complex_database_password_that_is_very_long"
+      ACCEPT_EULA: "Y"

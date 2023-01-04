@@ -8,6 +8,10 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using API.Models;
 using API.Models.Validators;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -43,13 +47,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<APIDbContext>(opt => 
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultName"));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultName"));
 });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())

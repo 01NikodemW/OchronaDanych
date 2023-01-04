@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using API.Enum;
 
 namespace API.Entities

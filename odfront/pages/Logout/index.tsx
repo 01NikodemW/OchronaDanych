@@ -117,9 +117,9 @@ export default function MainPage() {
 
   async function Login(loginData: LoginType) {
     setBlockLogin(true);
-    const response = await fetch("https://localhost:7154/api/account/login/", {
+    const response = await fetch("https://localhost:8001/api/account/login/", {
       method: "POST",
-      mode: "cors",
+      mode: "no-cors",
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
@@ -146,7 +146,7 @@ export default function MainPage() {
 
   async function Register(registerData: RegisterType) {
     const response = await fetch(
-      "https://localhost:7154/api/account/register/",
+      "https://localhost:8001/api/account/register/",
       {
         method: "POST",
         mode: "cors",

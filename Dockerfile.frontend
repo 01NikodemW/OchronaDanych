@@ -1,0 +1,21 @@
+# Base on offical Node.js Alpine image
+FROM node:alpine
+
+# Set working directory
+WORKDIR /usr/app
+
+# Copy package.json and package-lock.json before other files
+# Utilise Docker cache to save re-installing dependencies if unchanged
+COPY ./odfront/ ./
+
+# Install dependencies
+RUN npm install --production
+
+
+# Expose the listening port
+EXPOSE 4430
+
+# USER root
+
+# Run npm start script when container starts
+CMD [ "npm", "run", "dev2" ]
