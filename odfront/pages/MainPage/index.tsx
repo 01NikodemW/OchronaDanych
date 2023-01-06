@@ -65,7 +65,7 @@ export default function MainPage() {
   console.log("passwordStrength ", passwordStrength);
 
   async function decryptData() {
-    setBlockDecryption(true)
+    setBlockDecryption(true);
     const response = await fetch("https://localhost:7154/api/notes/decrypt", {
       method: "POST",
       mode: "cors",
@@ -80,7 +80,7 @@ export default function MainPage() {
       }),
     });
     if (!response.ok) {
-      setBlockDecryption(false)
+      setBlockDecryption(false);
       if (response.status == 408) {
         setIsErrorModalOpen(true);
         setModalErrorMessage("Przekroczono ilość prób, proszę czekać");
@@ -109,8 +109,8 @@ export default function MainPage() {
       }),
     });
     if (!response.ok) {
-      console.log("not ok");
-      throw new Error(`HTTP error! status: ${response.status}`);
+      setIsErrorModalOpen(true);
+      setModalErrorMessage("Błąd w trakcie zmiany uprawnien");
     }
   }
 
@@ -127,6 +127,12 @@ export default function MainPage() {
       body: JSON.stringify(note),
     });
     if (!response.ok) {
+      if (response.status == 404) {
+        setIsErrorModalOpen(true);
+        setModalErrorMessage("Błąd w trakcie wysylania notatki");
+        return;
+      }
+
       setIsErrorModalOpen(true);
       setModalErrorMessage(await response.text());
       return;
@@ -146,7 +152,9 @@ export default function MainPage() {
       },
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      setIsErrorModalOpen(true);
+      setModalErrorMessage("Błąd w trakcie odczytywania notatek");
+      return;
     }
     const data = await response.json();
     data.forEach((d: any) => {
@@ -198,7 +206,7 @@ export default function MainPage() {
     setIsInsertPasswordModalOpen(false);
     setDecryptedNote("");
     setNotePasswordToDecrypt("");
-    setBlockDecryption(false)
+    setBlockDecryption(false);
   };
 
   const changePasswordStrength = (
@@ -239,10 +247,18 @@ export default function MainPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const decoded = jwt_decode(token);
-    const values = Object.values(decoded);
+    if (token === null) {
+      return;
+    }
 
+    const decoded = jwt_decode(token);
+    // @ts-ignore
+    const values = Object.values(decoded);
+    console.log(values);
+
+    // @ts-ignore
     setId(values[0]);
+    // @ts-ignore
     setEmail(values[1]);
     setMyNotes([]);
     getMyNotes();
@@ -711,7 +727,8 @@ export default function MainPage() {
             }}
           >
             <TextField
-              label="Haslo do notatki"
+              label="Hasło do notatki"
+              type={"password"}
               value={notePasswordToDecrypt}
               onChange={(e) => {
                 setNotePasswordToDecrypt(e.target.value);

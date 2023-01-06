@@ -25,13 +25,7 @@ namespace API.Controllers
             _notesService = notesService;
         }
 
-        //TODELETE
-        [HttpGet]
-        public ActionResult<IEnumerable<Note>> GetAll()
-        {
-            var notes = _notesService.GetAllNotes();
-            return Ok(notes);
-        }
+
 
         [Authorize]
         [HttpGet("mynotes")]
@@ -112,6 +106,13 @@ namespace API.Controllers
             return Ok();
         }
 
+        //TODELETE
+        [HttpGet]
+        public ActionResult<IEnumerable<Note>> GetAll()
+        {
+            var notes = _notesService.GetAllNotes();
+            return Ok(notes);
+        }
 
     }
 }
