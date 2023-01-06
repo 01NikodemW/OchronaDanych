@@ -62,7 +62,6 @@ export default function MainPage() {
   );
   const [blockDecryption, setBlockDecryption] = useState<boolean>(false);
 
-  console.log("passwordStrength ", passwordStrength);
 
   async function decryptData() {
     setBlockDecryption(true);
@@ -92,7 +91,6 @@ export default function MainPage() {
     }
     const data = await response.text();
     setDecryptedNote(data);
-    console.log(data);
   }
 
   async function changeAccessibility(noteId: string) {
@@ -115,7 +113,6 @@ export default function MainPage() {
   }
 
   async function sendNote(note: NoteToSend) {
-    console.log(note);
     const response = await fetch("https://localhost:7154/api/notes", {
       method: "POST",
       mode: "cors",
@@ -254,7 +251,6 @@ export default function MainPage() {
     const decoded = jwt_decode(token);
     // @ts-ignore
     const values = Object.values(decoded);
-    console.log(values);
 
     // @ts-ignore
     setId(values[0]);
