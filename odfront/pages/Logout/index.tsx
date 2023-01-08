@@ -117,9 +117,9 @@ export default function MainPage() {
 
   async function Login(loginData: LoginType) {
     setBlockLogin(true);
+
     const response = await fetch("https://localhost:8001/api/account/login/", {
       method: "POST",
-      mode: "no-cors",
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
@@ -131,6 +131,11 @@ export default function MainPage() {
       if (response.status == 408) {
         setIsErrorModalOpen(true);
         setModalErrorMessage("Przekroczono ilość prób, proszę czekać");
+        return;
+      }
+      if (response.status == 400) {
+        setIsErrorModalOpen(true);
+        setModalErrorMessage("Błąd w trakcie logowania");
         return;
       }
       setIsErrorModalOpen(true);

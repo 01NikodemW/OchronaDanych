@@ -62,6 +62,10 @@ namespace API.Controllers
             {
                 return StatusCode(408, "Limit o login attempt, please wait");
             }
+            catch (Exception e)
+            {
+                return StatusCode(400, "Limit o login attempt, please wait");
+            }
 
         }
 

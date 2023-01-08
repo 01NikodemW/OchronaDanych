@@ -86,6 +86,11 @@ export default function MainPage() {
         setModalErrorMessage("Przekroczono ilość prób, proszę czekać");
         return;
       }
+      if (response.status == 408) {
+        setIsErrorModalOpen(true);
+        setModalErrorMessage("Błąd w trakcie odszyfrowywania");
+        return;
+      }
       setIsErrorModalOpen(true);
       setModalErrorMessage("Błąd w trakcie odszyfrowywania");
       return;

@@ -21,6 +21,8 @@ services:
       dockerfile: Dockerfile.backend
     links:
       - "database:database"
+    depends_on:
+      - database
 
   database:
     container_name: sql-server-db
