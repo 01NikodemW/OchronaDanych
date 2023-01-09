@@ -452,6 +452,7 @@ export default function MainPage() {
               <Box sx={{}}>
                 <TextField
                   label="hasło"
+                  type={"password"}
                   sx={{
                     input: {
                       color: "black",

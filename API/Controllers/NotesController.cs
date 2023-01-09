@@ -71,7 +71,7 @@ namespace API.Controllers
             // var noteContent = _notesService.DecryptNote(dto.NoteId, Guid.Parse(userId), dto.Password);
             // return Ok(noteContent);
 
-            int milliseconds = 1000;
+            int milliseconds = 2000;
             Thread.Sleep(milliseconds);
             try
             {

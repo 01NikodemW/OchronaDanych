@@ -45,9 +45,14 @@ namespace API.Services
         public string EncryptNote(string keyString, string note)
         {
 
-            while (keyString.Length < 16)
+            while (keyString.Length < 32)
             {
                 keyString += "0";
+            }
+
+            if (keyString.Length > 32)
+            {
+                keyString = keyString.Substring(0, 32);
             }
 
             var IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -90,7 +95,7 @@ namespace API.Services
                 throw new TimeoutException("You have to wait to decrypt again");
             }
 
-            var result =  _passwordHasher.VerifyHashedPassword(note, note.PasswordHash, password);
+            var result = _passwordHasher.VerifyHashedPassword(note, note.PasswordHash, password);
             if (result == PasswordVerificationResult.Failed)
             {
                 if (note.NumberOfFailedNoteDecryptAttempts >= 2)
@@ -111,9 +116,15 @@ namespace API.Services
             var keyString = password;
 
 
-            while (keyString.Length < 16)
+            while (keyString.Length < 32)
             {
                 keyString += "0";
+            }
+
+
+            if (keyString.Length > 32)
+            {
+                keyString = keyString.Substring(0, 32);
             }
 
             var IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -190,7 +201,7 @@ namespace API.Services
             _dbContext.SaveChanges();
         }
 
-                //TODELETE
+        //TODELETE
         public IEnumerable<Note> GetAllNotes()
         {
             var notes = _dbContext.Notes.ToList();

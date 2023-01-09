@@ -51,7 +51,7 @@ namespace API.Controllers
             // {
             //     return BadRequest();
             // }
-            int milliseconds = 1000;
+            int milliseconds = 2000;
             Thread.Sleep(milliseconds);
             try
             {
