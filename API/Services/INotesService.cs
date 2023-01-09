@@ -14,11 +14,5 @@ namespace API.Services
         string EncryptNote(string key, string note);
 
         string DecryptNote(Guid noteId, Guid userId, string password);
-
-        //TODELETE
-        void RemoveAllNotes();
-
-        //TODELETE
-        IEnumerable<Note> GetAllNotes();
     }
 }

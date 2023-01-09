@@ -7,9 +7,5 @@ namespace API.Services
     {
         void RegisterUser(RegisterUserDto dto);
         string GenerateJwt(LoginDto dto);
-        //TODELETE
-        IEnumerable<User> GetAllUsers();
-        //TODELETE
-        void DeleteUser(Guid id);
     }
 }

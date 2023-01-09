@@ -25,13 +25,6 @@ namespace API.Controllers
             _notesService = notesService;
         }
 
-        //TODELETE
-        [HttpGet]
-        public ActionResult<IEnumerable<Note>> GetAll()
-        {
-            var notes = _notesService.GetAllNotes();
-            return Ok(notes);
-        }
 
         [Authorize]
         [HttpGet("mynotes")]
@@ -74,10 +67,9 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            // var noteContent = _notesService.DecryptNote(dto.NoteId, Guid.Parse(userId), dto.Password);
-            // return Ok(noteContent);
 
-            int milliseconds = 1000;
+
+            int milliseconds = 2000;
             Thread.Sleep(milliseconds);
             try
             {
@@ -104,15 +96,6 @@ namespace API.Controllers
                 return BadRequest();
             }
             _notesService.ChangeAccessibility(dto.NoteId, Guid.Parse(userId));
-            return Ok();
-        }
-
-        //TODELETE
-        [HttpDelete]
-        public ActionResult Delete()
-        {
-            _notesService.RemoveAllNotes();
-
             return Ok();
         }
 

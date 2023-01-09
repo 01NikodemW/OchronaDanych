@@ -22,13 +22,6 @@ namespace API.Controllers
             _accountService = accountService;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Note>> GetAll()
-        {
-            var users = _accountService.GetAllUsers();
-            return Ok(users);
-        }
-
         [HttpPost("register")]
         public ActionResult RegisterUser([FromBody] RegisterUserDto dto)
         {
@@ -45,13 +38,8 @@ namespace API.Controllers
         [HttpPost("login")]
         public ActionResult Login([FromBody] LoginDto dto)
         {
-            // var validator = new LoginDtoValidator(_dbContext);
-            // var validationResult = validator.Validate(dto);
-            // if (!validationResult.IsValid)
-            // {
-            //     return BadRequest();
-            // }
-            int milliseconds = 1000;
+
+            int milliseconds = 2000;
             Thread.Sleep(milliseconds);
             try
             {
@@ -69,11 +57,5 @@ namespace API.Controllers
 
         }
 
-        [HttpDelete]
-        public ActionResult DeleteParcel([FromBody] Guid id)
-        {
-            _accountService.DeleteUser(id);
-            return Ok();
-        }
     }
 }

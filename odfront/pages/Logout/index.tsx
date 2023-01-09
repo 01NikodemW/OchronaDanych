@@ -234,6 +234,7 @@ export default function MainPage() {
               />
               <TextField
                 label="Hasło"
+                type={"password"}
                 value={loginPasswordValue}
                 onChange={(e) => {
                   setLoginPasswordValue(e.target.value);
@@ -312,6 +313,7 @@ export default function MainPage() {
               />
               <TextField
                 label="Hasło"
+                type={"password"}
                 value={registerPasswordValue}
                 onChange={changePasswordStrength}
                 sx={{
@@ -323,6 +325,7 @@ export default function MainPage() {
               />
               <TextField
                 label="Powtórzone hasło"
+                type={"password"}
                 value={registerRepeatPasswordValue}
                 onChange={(e) => {
                   setRegisterRepeatPasswordValue(e.target.value);

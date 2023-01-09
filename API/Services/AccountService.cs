@@ -116,24 +116,5 @@ namespace API.Services
             return tokenHandler.WriteToken(token);
 
         }
-
-        //TODELETE
-        public IEnumerable<User> GetAllUsers()
-        {
-            var users = _dbContext.Users.ToList();
-            return users;
-        }
-
-
-        //TODELETE
-        public void DeleteUser(Guid id)
-        {
-            var user = _dbContext.Users.FirstOrDefault(p => p.Id == id);
-            if (user is null)
-                throw new NullReferenceException("User to delete found");
-
-            _dbContext.Users.Remove(user);
-            _dbContext.SaveChanges();
-        }
     }
 }
