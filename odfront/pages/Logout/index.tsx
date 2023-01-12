@@ -176,8 +176,8 @@ export default function MainPage() {
   return (
     <>
       <Head>
-        <title>Moje Notatki</title>
-        <meta name="MyParcels" content="MyParcels" />
+        <title>Logout</title>
+        <meta name="Logout" content="Logout" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box

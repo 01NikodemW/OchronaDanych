@@ -241,6 +241,7 @@ export default function MainPage() {
     const token = localStorage.getItem("token");
 
     if (token === null) {
+      router.push("/Logout");
       return;
     }
 
@@ -261,7 +262,7 @@ export default function MainPage() {
     <>
       <Head>
         <title>Moje Notatki</title>
-        <meta name="MyParcels" content="MyParcels" />
+        <meta name="MojeNotatki" content="MojeNotatki" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box

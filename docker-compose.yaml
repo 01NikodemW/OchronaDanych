@@ -30,5 +30,5 @@ services:
     ports:
       - "1433:1433"
     environment:
-      SA_PASSWORD: "very_complex_database_password_that_is_very_long"
+      SA_PASSWORD: "M4CNH6XA#LOX2T4!@#A#"
       ACCEPT_EULA: "Y"
