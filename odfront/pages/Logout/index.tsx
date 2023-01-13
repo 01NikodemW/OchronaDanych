@@ -122,7 +122,7 @@ export default function MainPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://localhost:4430",
       },
       body: JSON.stringify(loginData),
     });
@@ -157,7 +157,7 @@ export default function MainPage() {
         mode: "cors",
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": "https://localhost:4430",
         },
         body: JSON.stringify(registerData),
       }

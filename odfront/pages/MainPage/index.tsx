@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { TextareaAutosize } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import jwt_decode from "jwt-decode";
@@ -140,7 +140,7 @@ export default function MainPage() {
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://localhost:4430",
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     });
@@ -237,7 +237,7 @@ export default function MainPage() {
     setNotePassword(newPassword);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token === null) {
