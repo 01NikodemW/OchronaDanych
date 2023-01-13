@@ -248,7 +248,6 @@ export default function MainPage() {
     const decoded = jwt_decode(token);
     // @ts-ignore
     const values = Object.values(decoded);
-    console.log(values);
 
     // @ts-ignore
     setId(values[0]);
